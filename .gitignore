@@ -7,3 +7,6 @@ models/pretrained_model.bin
 corpora/encrypted_traffic_burst.txt
 corpora/encrypted_traffic_burst.zip
 .idea/
+datasets/cstnet-tls1.3_flow.zip
+datasets/cstnet-tls1.3_packet.zip
+datasets/cstnet-tls1.3
