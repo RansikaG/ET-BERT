@@ -1,0 +1,9 @@
+uer/
+datasets/CSTNET-TLS 1.3 /flow_500/
+datasets/CSTNET-TLS 1.3 /flow_dataset.zip
+datasets/CSTNET-TLS 1.3 /packet_5000/
+datasets/CSTNET-TLS 1.3 /packet_dataset.zip
+models/pretrained_model.bin
+corpora/encrypted_traffic_burst.txt
+corpora/encrypted_traffic_burst.zip
+.idea/

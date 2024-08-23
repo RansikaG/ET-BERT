@@ -8,3 +8,7 @@ data download link
 
 **Labels of Dataset**
 ![image](https://user-images.githubusercontent.com/20349381/209489651-a7665404-0223-4ac0-85f0-2a52424198b4.png)
+
+## Use this to Download the dataset ##
+
+```gdown --folder --id 1JSsYmevkxQFanoKOi_i1ooA6pH3s9sDr```

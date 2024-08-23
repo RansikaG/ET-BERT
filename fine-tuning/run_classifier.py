@@ -1,6 +1,12 @@
 """
 This script provides an exmaple to wrap UER-py for classification.
 """
+import os
+import sys
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import random
 import argparse
 import torch
