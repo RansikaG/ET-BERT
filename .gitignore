@@ -1,12 +1,19 @@
 uer/
+fine-tuning/results
 datasets/CSTNET-TLS 1.3 /flow_500/
 datasets/CSTNET-TLS 1.3 /flow_dataset.zip
 datasets/CSTNET-TLS 1.3 /packet_5000/
 datasets/CSTNET-TLS 1.3 /packet_dataset.zip
-models/pretrained_model.bin
+datasets/ISCX_packet
+datasets/ISCX_packet.zip
+pretrained_model.bin
+finetuned_model.bin
 corpora/encrypted_traffic_burst.txt
 corpora/encrypted_traffic_burst.zip
 .idea/
 datasets/cstnet-tls1.3_flow.zip
 datasets/cstnet-tls1.3_packet.zip
 datasets/cstnet-tls1.3
+datasets/*.tsv
+executables
+__pycache__/

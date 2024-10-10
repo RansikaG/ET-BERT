@@ -58,7 +58,7 @@ def statistic_dataset_sample_count(data_path):
             dataset_label.extend(d)
         elif f == []:
             
-            if (p.split("\\")[-1] not in dataset_label):
+            if (p.split("/")[-1] not in dataset_label):
                 continue
 
             file_num = 0
@@ -68,7 +68,7 @@ def statistic_dataset_sample_count(data_path):
             temp.append(p)
         else:
             if tls13_flag == 1:
-                if (p.split("\\")[-1] not in dataset_label):
+                if (p.split("/")[-1] not in dataset_label):
                     continue
 
                 file_num = 0

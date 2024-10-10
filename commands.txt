@@ -1,0 +1,22 @@
+Fine tuning
+
+ISCX-PACKET
+
+python3 fine-tuning/run_classifier.py --pretrained_model_path models/pretrained_model.bin \
+                                   --vocab_path models/encryptd_vocab.txt \
+                                   --train_path datasets/ISCX_packet/payload_perturbations/random_perturbations_slices/train_dataset.tsv \
+                                   --dev_path datasets/ISCX_packet/payload_perturbations/random_perturbations_slices/valid_dataset.tsv \
+                                   --test_path datasets/ISCX_packet/payload_perturbations/random_perturbations_slices/test_dataset.tsv \
+                                   --epochs_num 10 --batch_size 32 --embedding word_pos_seg \
+                                   --encoder transformer --mask fully_visible \
+                                   --seq_length 128 --learning_rate 2e-5
+
+
+python3 fine-tuning/run_classifier.py --pretrained_model_path models/pretrained_model.bin \
+                                   --vocab_path models/encryptd_vocab.txt \
+                                   --train_path datasets/cstnet-tls1.3/train_dataset.tsv \
+                                   --dev_path datasets/cstnet-tls1.3/valid_dataset.tsv \
+                                   --test_path datasets/cstnet-tls1.3/test_dataset.tsv \
+                                   --epochs_num 10 --batch_size 32 --embedding word_pos_seg \
+                                   --encoder transformer --mask fully_visible \
+                                   --seq_length 128 --learning_rate 2e-5

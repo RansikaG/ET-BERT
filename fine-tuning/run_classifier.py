@@ -4,6 +4,9 @@ This script provides an exmaple to wrap UER-py for classification.
 import os
 import sys
 
+import pandas as pd
+from GPUtil import GPUtil
+
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -85,10 +88,10 @@ def count_labels_num(path):
     return len(labels_set)
 
 
-def load_or_initialize_parameters(args, model):
+def load_or_initialize_parameters(args, model,device):
     if args.pretrained_model_path is not None:
         # Initialize with pretrained model.
-        model.load_state_dict(torch.load(args.pretrained_model_path, map_location={'cuda:1':'cuda:0', 'cuda:2':'cuda:0', 'cuda:3':'cuda:0'}), strict=False)
+        model.load_state_dict(torch.load(args.pretrained_model_path, map_location={'cuda:1':f'cuda:{device}', 'cuda:2':f'cuda:{device}', 'cuda:3':f'cuda:{device}'}), strict=False)
     else:
         # Initialize with normal distribution.
         for n, p in list(model.named_parameters()):
@@ -186,8 +189,8 @@ def train_model(args, model, optimizer, scheduler, src_batch, tgt_batch, seg_bat
         soft_tgt_batch = soft_tgt_batch.to(args.device)
 
     loss, _ = model(src_batch, tgt_batch, seg_batch, soft_tgt_batch)
-    if torch.cuda.device_count() > 1:
-        loss = torch.mean(loss)
+    # if torch.cuda.device_count() > 1:
+    #     loss = torch.mean(loss)
 
     if args.fp16:
         with args.amp.scale_loss(loss, optimizer) as scaled_loss:
@@ -230,9 +233,20 @@ def evaluate(args, dataset, print_confusion_matrix=False):
         print("Confusion matrix:")
         print(confusion)
         cf_array = confusion.numpy()
-        with open("/data2/lxj/pre-train/results/confusion_matrix",'w') as f:
-            for cf_a in cf_array:
-                f.write(str(cf_a)+'\n')
+
+        # Get absolute path of the 'results' directory
+        results_dir = os.path.abspath("fine-tuning/results")
+        print(f"Saving confusion matrix to: {results_dir}")
+
+        # Ensure the 'results' directory exists
+        os.makedirs(results_dir, exist_ok=True)
+
+        # Convert confusion matrix to DataFrame
+        confusion_df = pd.DataFrame(cf_array)
+
+        # Metrics list to store precision, recall, f1-scores
+        metrics = []
+
         print("Report precision, recall, and f1:")
         eps = 1e-9
         for i in range(confusion.size()[0]):
@@ -242,7 +256,19 @@ def evaluate(args, dataset, print_confusion_matrix=False):
                 f1 = 0
             else:
                 f1 = 2 * p * r / (p + r)
+            metrics.append([i, p, r, f1])
             print("Label {}: {:.3f}, {:.3f}, {:.3f}".format(i, p, r, f1))
+
+        # Convert metrics to DataFrame
+        metrics_df = pd.DataFrame(metrics, columns=["Label", "Precision", "Recall", "F1-Score"])
+
+        # Save confusion matrix and metrics to Excel
+        excel_path = os.path.join(results_dir, "metrics_report.xlsx")
+        with pd.ExcelWriter(excel_path) as writer:
+            confusion_df.to_excel(writer, sheet_name='Confusion_Matrix', index=False)
+            metrics_df.to_excel(writer, sheet_name='Metrics', index=False)
+
+        print(f"Metrics saved to Excel file: {excel_path}")
 
     print("Acc. (Correct/Total): {:.4f} ({}/{}) ".format(correct / len(dataset), correct, len(dataset)))
     return correct / len(dataset), confusion
@@ -284,10 +310,40 @@ def main():
     # Build classification model.
     model = Classifier(args)
 
-    # Load or initialize parameters.
-    load_or_initialize_parameters(args, model)
+    # Check if CUDA is available
 
-    args.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        # Get a list of available GPUs that are not fully occupied
+        available_gpus = GPUtil.getAvailable(order='first', limit=1, maxLoad=0.1, maxMemory=0.1)
+
+        if available_gpus:
+            # Choose the first available GPU
+            device = torch.device(f"cuda:{available_gpus[0]}")
+            device_no = available_gpus[0]
+            # print(f"cuda:{available_gpus[0]} is available. Should we continue ?")
+            # answer = input()
+            # if answer == 'y':
+            #     args.device = device
+            # else:
+            #     return
+            args.device = device
+        else:
+            # Default to CPU if no CUDA devices are available
+            print("CUDA is not available. Do you wanna force a gpu")
+            answer = input()
+            if answer == '1' or  answer == '2' :
+                device_no = answer
+                args.device = torch.device(f"cuda:{answer}")
+            else:
+                return
+    else:
+        # Default to CPU if no CUDA devices are available
+        print("CUDA is not available. Model cannot be loaded.")
+        return
+    # Load or initialize parameters.
+    load_or_initialize_parameters(args, model, device=device_no)
+
+
     model = model.to(args.device)
 
     # Training phase.
@@ -319,9 +375,9 @@ def main():
         model, optimizer = amp.initialize(model, optimizer, opt_level=args.fp16_opt_level)
         args.amp = amp
 
-    if torch.cuda.device_count() > 1:
-        print("{} GPUs are available. Let's use them.".format(torch.cuda.device_count()))
-        model = torch.nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     print("{} GPUs are available. Let's use them.".format(torch.cuda.device_count()))
+    #     model = torch.nn.DataParallel(model)
     args.model = model
 
     total_loss, result, best_result = 0.0, 0.0, 0.0
@@ -346,7 +402,8 @@ def main():
     if args.test_path is not None:
         print("Test set evaluation.")
         if torch.cuda.device_count() > 1:
-            model.module.load_state_dict(torch.load(args.output_model_path))
+            # model.module.load_state_dict(torch.load(args.output_model_path))
+            model.load_state_dict(torch.load(args.output_model_path))
         else:
             model.load_state_dict(torch.load(args.output_model_path))
         evaluate(args, read_dataset(args, args.test_path), True)

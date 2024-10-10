@@ -198,7 +198,7 @@ def read_pcap_flow(pcap_file):
     return flow_data_string
 
 def split_cap(pcap_file,pcap_name):
-    cmd = "I:\\SplitCap.exe -r %s -s session -o I:\\split_pcaps\\" + pcap_name
+    cmd = "mono /home/ransika/ET-BERT/executables/SplitCap.exe -r %s -s session -o I:\\split_pcaps\\" + pcap_name
     command = cmd%pcap_file
     os.system(command)
     return 0

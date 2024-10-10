@@ -8,3 +8,13 @@ We generate the training data (packet-level) from the public datasets `ISCX-VPN`
 ### Labels of Datasets
 
 ![image](https://user-images.githubusercontent.com/20349381/167751578-655a1e5c-c45d-4fda-8324-5c95a5e1d476.png)
+
+https://pubfaili.edi.lv:58043/s/FdpdFERkGXpCc2X?path=%2F#
+
+rsync -avz /Users/z5550249/Downloads/_decoded_data.zip  ransika@zepplin.cse.unsw.edu.au:/home/ransika/ET-BERT/datasets
+scp -i /Users/z5550249/.ssh/z5550249_UNSW /Users/z5550249/Downloads/_decoded_data.zip  ransika@zepplin.cse.unsw.edu.au:/home/ransika/ET-BERT/datasets
+
+
+scp -i /Users/z5550249/.ssh/z5550249_UNSW -r ransika@zepplin.cse.unsw.edu.au:/home/ransika/ET-BERT /Users/z5550249/Documents/Projects
+
+

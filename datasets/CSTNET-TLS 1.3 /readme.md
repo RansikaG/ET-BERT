@@ -12,3 +12,8 @@ data download link
 ## Use this to Download the dataset ##
 
 ```gdown --folder --id 1JSsYmevkxQFanoKOi_i1ooA6pH3s9sDr```
+
+## Use this to download the finetune-cstnet-tls 1.3 pcaps
+```gdown --folder --id 1BUo5TMRuXNvTqNYy0RLeHk4l4Q3BuzSk```
+
+

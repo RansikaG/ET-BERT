@@ -101,9 +101,9 @@ def main():
     # For simplicity, we use DataParallel wrapper to use multiple GPUs.
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
-    if torch.cuda.device_count() > 1:
-        print("{} GPUs are available. Let's use them.".format(torch.cuda.device_count()))
-        model = torch.nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     print("{} GPUs are available. Let's use them.".format(torch.cuda.device_count()))
+    #     model = torch.nn.DataParallel(model)
 
     dataset = read_dataset(args, args.test_path)
 
